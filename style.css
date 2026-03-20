@@ -1,0 +1,131 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f1f1f1;
+}
+
+.todo-container {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 450px;
+  text-align: center;
+}
+
+.todo-container__header {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.todo-container__form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.todo-container__input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.todo-container__input:focus {
+  outline: none;
+  border-color: #28a745;
+}
+
+/* 할 일 추가 버튼*/
+.todo-container__button {
+  background-color: #28a745; /* 기본 초록색 */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+  /* transition을 넣어야 색깔이 부드럽게 바뀝니다 */
+  transition: background-color 0.2s ease;
+}
+
+/* 마우스를 올렸을 때 (살짝 더 진한 초록색) */
+.todo-container__button:hover {
+  background-color: #218838;
+}
+
+/* 렌더링 영역 스타일 */
+
+.render-container {
+  display: flex; /* ✅ 가로로 배치 */
+  flex-direction: row; /* ✅ 방향을 가로로 설정합니다! */
+  justify-content: space-between;
+  gap: 20px; /* 두 영역 사이 간격 */
+  text-align: left;
+  margin-top: 20px;
+}
+
+.render-container__section {
+  flex: 1;
+  width: 100%;
+}
+
+.render-container__title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+  text-align: center;
+}
+
+.render-container__list {
+  list-style: none;
+}
+
+.render-container__item {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.render-container__item-button {
+  border: none;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.render-container__item-button--complete {
+  background-color: #28a745;
+}
+
+.render-container__item-button--complete:hover {
+  background-color: #218838;
+}
+
+.render-container__item-button--delete {
+  background-color: #dc3545;
+}
+
+.render-container__item-button--delete:hover {
+  background-color: #c82333;
+}
