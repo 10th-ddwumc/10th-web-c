@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    color: white;
+    font-size: 1.5rem;
+}
+
+.header-box, .menu-box, .hero-box, .main-box, 
+.image-box, .extra-box, .banner-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: grid;
+    grid-template-rows: 70px 200px 1fr 80px;
+    min-height: 100vh;
+}
+
+.top-bar {
+    display: flex;
+}
+.header-box {
+    flex: 1;
+    background-color: #1a2233;
+}
+.menu-box {
+    flex: 4; 
+    background-color: #f04d54;
+}
+
+.hero-box {
+    background-color: #5188c7;
+}
+
+.middle-section {
+    display: grid;
+    grid-template-columns: 4fr 2fr 1.3fr;
+    background-color: white;
+}
+
+.main-box {
+    background-color: #27374d;
+}
+
+.empty-box {
+    background-color: white;
+}
+
+.side-stack {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+.image-box {
+    background-color: #bee3e7;
+    color: #333;
+}
+.extra-box {
+    background-color: #58c199;
+}
+
+.banner-box {
+    background-color: #fdd365;
+    color: #333;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="top-bar">
+            <div class="header-box">HEADER</div>
+            <div class="menu-box">MENU</div>
+        </header>
+
+        <section class="hero-box">HERO</section>
+
+        <section class="middle-section">
+            <div class="main-box">MAIN</div>
+            <div class="empty-box"></div> <div class="side-stack">
+                <div class="image-box">IMAGE</div>
+                <div class="extra-box">EXTRA</div>
+            </div>
+        </section>
+
+        <footer class="banner-box">BANNER</footer>
+    </div>
+</body>
+</html>
