@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            margin: 0; 
+            padding: 0;
+            box-sizing: border-box; 
+            font-family:'Pretendard', sans-serif;
+            display: flex;
+            justify-content: center;
+            
+        }
+
+        nav{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid black;
+            width: 800px;
+            height: 70px;
+            border-radius: 30px;
+            box-shadow: 0 6px 0px #333;
+            padding: 0 25px;
+            margin: 10px auto;
+        }
+
+        .logo {
+        font-weight: bold;
+        font-size: 1.2rem;
+        }
+
+        .menu {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        }
+
+        .menu button {
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        background: transparent;
+        transition: 0.3s;
+        }
+
+        .menu button:hover{
+            color: rgb(255, 136, 0);
+        }
+
+        .lang-toggle { 
+        display: flex; 
+        align-items: center; 
+        gap: 5px;
+        border: 2px solid #333; 
+        border-radius: 20px; 
+        padding: 2px 5px;
+        background: white; 
+        box-shadow: 0 4px 0px #333;
+         }
+
+        .lang-input { 
+        display: none; 
+        } 
+
+         .lang-btn {
+        font-size: 12px; 
+        font-weight: 800; 
+        padding: 5px 12px;
+        border-radius: 15px; 
+        cursor: pointer;
+        border: 2px solid transparent; 
+        color: #333;
+        }
+
+        #ko:checked + .lang-btn,
+        #en:checked + .lang-btn {
+        background-color: #ff5a36;
+        color: white;
+        border: 2px solid #333;
+        }
+
+        .lang-label { font-size: 12px; 
+        color: #aaa; margin: 0 5px; 
+        font-weight: bold;
+        }
+
+        @media (max-width: 500px) {
+        .menu {
+            display: none;
+        }
+
+        .nav {
+            padding: 10px 20px;
+            margin: 0 10px;
+        }
+
+        .logo {
+            font-size: 20px;
+        }
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Aido</div>
+        <div class="menu">
+            <button class="menu-btn1">고양이 친구들</button>
+            <button class="menu-btn2">출시 알람 받기</button>
+        </div>
+        <div class="lang-toggle">
+            <span class="lang-label">언어</span>
+            <input type="radio" name="lang" id="ko" class="lang-input" checked>
+                <label for="ko" class="lang-btn">KO</label>
+            <input type="radio" name="lang" id="en" class="lang-input">
+                <label for="en" class="lang-btn">EN</label>
+        </div>
+        
+    </nav>
+</body>
+</html>
