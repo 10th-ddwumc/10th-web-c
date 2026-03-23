@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UJ TODO</title>
+    <link rel="stylesheet" href="week1_mission1.css">
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="todo-card">
+            <h1 class="todo-header">UJ TODO</h1>
+            
+            <form id="todo-form" class="input-group">
+                <input type="text" id="todo-input" class="todo-input" placeholder="할 일 입력" required>
+                <button type="submit" class="add-button">할 일 추가</button>
+            </form>
+
+            <div class="list-container">
+                <div class="list-section">
+                    <h2 class="list-title">할 일</h2>
+                    <ul id="todo-list" class="todo-items"></ul>
+                </div>
+                
+                <div class="list-section">
+                    <h2 class="list-title">완료</h2>
+                    <ul id="done-list" class="done-items"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="week1_mission1.js"></script>
+</body>
+</html>
