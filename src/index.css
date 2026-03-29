@@ -1,0 +1,14 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  font-family: Arial, sans-serif;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; 
+  background-color: #eef2f3;
+  color: #000000; 
+}
