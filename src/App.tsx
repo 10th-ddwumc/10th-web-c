@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import TodoInput from './components/TodoInput'; 
+import { TodoProvider, useTodo } from './TodoContext';
 import './App.css'; 
 import './index.css'; 
 
@@ -10,80 +11,102 @@ export type Task = {
   text: string;
 };
 
-function App() {
-  //useState 사용 -> 상태 관리해줌
-  const [todoInput, setTodoInput] = useState<string>(''); // 입력값
-  const [todos, setTodos] = useState<Task[]>([]);         // 할 일 목록
-  const [doneTasks, setDoneTasks] = useState<Task[]>([]); // 완료 목록
-  
-  // 할 일 추가
-  const addTodo = (e: FormEvent) => {
-    e.preventDefault(); // 폼 제출 시 새로고침 방지!!!!
-    if (!todoInput.trim()) return;
+function AppContent() {
+    // useState -> useTodo로 변경! (Context에서 관리하는 상태와 함수들을 가져옴)
+    const { 
+        isDarkMode, 
+        toggleDarkMode, 
+        todos, 
+        doneTasks, 
+        addTodo, 
+        completeTask, 
+        deleteTask 
+    } = useTodo();
 
-    const newTask: Task = { id: Date.now(), text: todoInput };
-    setTodos([...todos, newTask]); // 기존 리스트에 추가
-    setTodoInput(''); // 입력창 비우기
-  };
+    console.log("현재 다크모드 상태:", isDarkMode);
 
-  // 완료로 이동
-  const completeTask = (task: Task) => {
-    setTodos(todos.filter((t) => t.id !== task.id)); // 할 일에서 제거됨
-    setDoneTasks([...doneTasks, task]);              // 완료에 추가됨
-  };
+    // 입력창 상태는 화면 안에서만 쓰니까 여기서 관리해도 됨!
+    const [todoInput, setTodoInput] = useState<string>('');
 
-  // 완료에서 삭제
-  const deleteTask = (task: Task) => {
-    setDoneTasks(doneTasks.filter((t) => t.id !== task.id));
-  };
+    const handleAddTodo = (e: FormEvent) => {
+        e.preventDefault();
+        if (!todoInput.trim()) return;
+        
+        // Context의 addTodo를 실행! (여기서 text만 넘기면 됨)
+        addTodo(todoInput); 
+        setTodoInput('');
+    };
+
 
   return (
-    <div className="todo-container">
-      <h1 className="todo-container__header">Hyun's TODO</h1>
-      {/* 기존의 form -> component 를 넣음 */}
-      <TodoInput 
-        value={todoInput} 
-        onChange={(e) => setTodoInput(e.target.value)} 
-        onSubmit={addTodo} 
-      />
+    <div className={isDarkMode ? 'dark' : ''}>
+        <div className="app-layout">
+        <div className="todo-container">
+            <div className="flex justify-end mb-4"> 
+            <button 
+                onClick={toggleDarkMode}
+                className="px-3 py-1 text-xs rounded-full font-bold shadow-sm transition-all 
+                        bg-gray-200 text-gray-800 hover:bg-gray-300
+                        dark:bg-yellow-400 dark:text-black dark:hover:bg-yellow-500"
+            >
+                {isDarkMode ? '☀️ Light' : '🌙 Dark'}
+            </button>
+            </div>
+        <h1 className="todo-container__header">Hyun's TODO</h1>
+        {/* 기존의 form -> component 를 넣음 */}
+        <TodoInput 
+            value={todoInput} 
+            onChange={(e) => setTodoInput(e.target.value)} 
+            onSubmit={handleAddTodo}
+        />
 
-      <div className="render-container">
-        <div className="render-container__section">
-          <h2 className="render-container__title">할 일</h2>
-          <ul className="render-container__list">
-            {todos.map((task) => (
-              <li key={task.id} className="render-container__item">
-                <span className="render-container__item-text">{task.text}</span>
-                <button 
-                  className="render-container__item-button"
-                  style={{ backgroundColor: '#28a745' }}
-                  onClick={() => completeTask(task)}
-                >
-                  완료
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <div className="render-container">
+            <div className="render-container__section">
+            <h2 className="render-container__title">할 일</h2>
+            <ul className="render-container__list">
+                {todos.map((task) => (
+                <li key={task.id} className="render-container__item dark:bg-[#2d2d2d] dark:border-none">
+                    <span className="render-container__item-text">{task.text}</span>
+                    <button 
+                    className="render-container__item-button"
+                    style={{ backgroundColor: '#28a745' }}
+                    onClick={() => completeTask(task)}
+                    >
+                    완료
+                    </button>
+                </li>
+                ))}
+            </ul>
+            </div>
 
-        <div className="render-container__section">
-          <h2 className="render-container__title">완료</h2>
-          <ul className="render-container__list">
-            {doneTasks.map((task) => (
-              <li key={task.id} className="render-container__item">
-                <span className="render-container__item-text">{task.text}</span>
-                <button 
-                  className="render-container__item-button"
-                  onClick={() => deleteTask(task)}
-                >
-                  삭제
-                </button>
-              </li>
-            ))}
-          </ul>
+            <div className="render-container__section">
+            <h2 className="render-container__title">완료</h2>
+            <ul className="render-container__list">
+                {doneTasks.map((task) => (
+                <li key={task.id} className="render-container__item dark:bg-[#2d2d2d] dark:border-none">
+                    <span className="render-container__item-text">{task.text}</span>
+                    <button 
+                    className="render-container__item-button"
+                    onClick={() => deleteTask(task)}
+                    >
+                    삭제
+                    </button>
+                </li>
+                ))}
+            </ul>
+            </div>
         </div>
-      </div>
-    </div>
+        </div>
+        </div>
+        </div>
+  );
+}
+
+function App() {
+  return (
+    <TodoProvider>
+      <AppContent />
+    </TodoProvider>
   );
 }
 
