@@ -1,11 +1,13 @@
+import { Link } from 'react-router-dom';
 import type { Movie } from '../types/movie';
 
 const MovieCard = ({ movie }: { movie: Movie }) => {
   // 포스터 URL
   const posterUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
 
-  return (
-    <div className="relative group overflow-hidden rounded-lg cursor-pointer">
+return (
+    // div -> Link 로 변경
+    <Link to={`/movies/${movie.id}`} className="block relative group overflow-hidden rounded-lg cursor-pointer">
       {/* 영화 포스터 */}
       <img 
         src={posterUrl} 
@@ -20,7 +22,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
           {movie.overview || "줄거리 정보가 없습니다."}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 
