@@ -13,7 +13,7 @@ const MovieDetailPage = () => {
     const fetchMovieData = async () => {
       try {
         setLoading(true);
-        // 실제 API 호출 시 본인의 API_KEY와 BASE_URL을 사용하세요
+        
         const movieRes = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`);
         const creditsRes = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`);
         
