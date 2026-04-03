@@ -1,7 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 
-// Task 타입을 별도 파일(types.ts 등)로 분리하는 것이 권장되나, 현재는 예시에 맞춰 유지합니다.
 export interface Task {
   id: number;
   text: string;

@@ -1,6 +1,5 @@
 import type { ChangeEvent, FormEvent } from 'react';
 
-// 부모에게서 받아올 데이터와 함수의 타입을 정의
 interface TodoInputProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;

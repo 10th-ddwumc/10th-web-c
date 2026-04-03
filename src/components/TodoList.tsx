@@ -1,4 +1,3 @@
-// src/components/TodoList.tsx
 import TodoItem from './TodoItem'; 
 import type { Task } from '../contexts/TodoContext'; // 경로 확인 필요
 

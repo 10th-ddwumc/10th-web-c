@@ -8,7 +8,6 @@ import './index.css';
 import './App.css';  
 
 function AppContent() {
-    // 1. Context 분리에 따라 각각의 Hook에서 상태를 가져옴
     const { todos, doneTasks, addTodo, completeTask, deleteTask } = useTodo();
     const { isDarkMode, toggleDarkMode } = useTheme();
 
@@ -22,7 +21,6 @@ function AppContent() {
     };
 
     return (
-        // 2. 최상위 div에 다크모드 클래스 적용
         <div className={isDarkMode ? 'dark' : ''}>
             <div className="app-layout dark:bg-[#1a1a1a] min-h-screen transition-colors">
                 <div className="todo-container">
@@ -46,7 +44,6 @@ function AppContent() {
                     />
 
                     <div className="render-container">
-                        {/* 3. 피드백 반영: TodoList 컴포넌트를 사용하여 중복 로직 제거 */}
                         <TodoList 
                             title="할 일"
                             tasks={todos}
@@ -69,7 +66,6 @@ function AppContent() {
     );
 }
 
-// 4. 두 개의 Provider로 AppContent를 감싸줌
 function App() {
   return (
     <ThemeProvider>

@@ -1,4 +1,3 @@
-// src/components/TodoItem.tsx
 import type { Task } from '../contexts/TodoContext';
 
 interface TodoItemProps {
