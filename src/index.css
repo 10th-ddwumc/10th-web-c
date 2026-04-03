@@ -24,7 +24,7 @@ body {
   color: white !important;
 }
 
-/* 다크모드일 때 투두 컨테이너 색상 변경 */
+
 .dark .todo-container {
   background-color: #2d2d2d !important;
   color: white !important;

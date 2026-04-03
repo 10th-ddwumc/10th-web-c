@@ -5,7 +5,7 @@ interface TodoItemProps {
   isDone: boolean;
   buttonText: string;    
   buttonColor?: string; 
-  onButtonClick: (task: Task) => void; // 부모가 정의한 동작 수행
+  onButtonClick: (task: Task) => void; 
 }
 
 const TodoItem = ({ 
