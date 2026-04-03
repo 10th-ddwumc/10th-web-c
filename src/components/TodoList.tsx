@@ -1,5 +1,6 @@
+// src/components/TodoList.tsx
 import TodoItem from './TodoItem'; 
-import type { Task } from '../App';
+import type { Task } from '../contexts/TodoContext'; // 경로 확인 필요
 
 interface TodoListProps {
   title: string;
@@ -18,13 +19,15 @@ const TodoList = ({ title, tasks, buttonText, buttonColor, onButtonClick }: Todo
           <TodoItem 
             key={task.id} 
             task={task} 
-            buttonText={buttonText} 
-            buttonColor={buttonColor} 
-            onButtonClick={onButtonClick} 
+            isDone={title === "완료"}
+            buttonText={buttonText}
+            buttonColor={buttonColor}
+            onButtonClick={onButtonClick}
           />
         ))}
       </ul>
     </div>
   );
 };
+
 export default TodoList;

@@ -1,23 +1,31 @@
-import { useTodo } from '../TodoContext';
-import type { Task } from '../App';
+// src/components/TodoItem.tsx
+import type { Task } from '../contexts/TodoContext';
 
 interface TodoItemProps {
   task: Task;
-  isDone: boolean; // 할 일인지 완료인지 구분만 해줌
+  isDone: boolean;
+  buttonText: string;    
+  buttonColor?: string; 
+  onButtonClick: (task: Task) => void; // 부모가 정의한 동작 수행
 }
 
-const TodoItem = ({ task, isDone }: TodoItemProps) => {
-  const { completeTask, deleteTask } = useTodo(); // 낚시질! 🎣
-
+const TodoItem = ({ 
+  task, 
+  isDone, 
+  buttonText, 
+  buttonColor, 
+  onButtonClick 
+}: TodoItemProps) => {
+  
   return (
     <li className="render-container__item">
       <span className="render-container__item-text">{task.text}</span>
       <button 
         className="render-container__item-button"
-        style={{ backgroundColor: isDone ? '#dc3545' : '#28a745' }}
-        onClick={() => isDone ? deleteTask(task) : completeTask(task)}
+        style={{ backgroundColor: buttonColor || (isDone ? '#dc3545' : '#28a745') }}
+        onClick={() => onButtonClick(task)}
       >
-        {isDone ? '삭제' : '완료'}
+        {buttonText}
       </button>
     </li>
   );
