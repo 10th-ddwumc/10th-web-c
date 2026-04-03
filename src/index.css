@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+/* 우선 순위가 밀리면서 다크모드가 적용이 안됐었음 -> 다 뺌*/
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* 화면 전체 레이아웃 (중앙 정렬) */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: white; 
+  color: black;           
+}
+
+/* 다크모드일 때 배경과 글자색 변경 */
+.dark .app-layout {
+  background-color: #1a1a1a !important;
+  color: white !important;
+}
+
+
+.dark .todo-container {
+  background-color: #2d2d2d !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.dark .todo-container__header,
+.dark .render-container__title {
+  color: white !important;
+}
