@@ -1,0 +1,23 @@
+# 배포 및 빌드 결과물
+dist
+dist-ssr
+*.local
+
+node_modules
+.pnpm-store
+
+# 로그
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 에디터 설정 및 시스템 파일
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
