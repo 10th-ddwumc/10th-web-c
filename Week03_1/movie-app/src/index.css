@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 그 아래에 있는 .hero, .vite 등 기존 CSS는 다 지워도 무방합니다. 
+   Tailwind와 충돌이 날 수 있거든요! */
