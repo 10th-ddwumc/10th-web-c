@@ -31,5 +31,4 @@ export interface Cast {
 export interface Credits {
   id: number;
   cast: Cast[];
-  crew: any[];
 }

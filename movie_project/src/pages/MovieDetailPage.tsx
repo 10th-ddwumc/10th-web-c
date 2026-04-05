@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../api/axios'; 
 import type { MovieDetail, Cast } from '../types/movie'; 
 
 const MovieDetailPage = () => {
@@ -18,12 +18,8 @@ const MovieDetailPage = () => {
         setIsError(false);
 
         const [detailRes, creditsRes] = await Promise.all([
-          axios.get(`https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`, {
-            headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1N2E5ZTYyOGU4MDg3YmMzMTQ4MDVlYzNlN2MzOTE5ZSIsIm5iZiI6MTc3NTA0NjgxNy4wMiwic3ViIjoiNjljZDEwYTFiYTRiNTNiNjNlMjdmMWQzIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.ZI8K1VWf2PpkGaLRm3i4hqUvx02tY0cU-7KVyEUKQrc` }
-          }),
-          axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`, {
-            headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1N2E5ZTYyOGU4MDg3YmMzMTQ4MDVlYzNlN2MzOTE5ZSIsIm5iZiI6MTc3NTA0NjgxNy4wMiwic3ViIjoiNjljZDEwYTFiYTRiNTNiNjNlMjdmMWQzIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.ZI8K1VWf2PpkGaLRm3i4hqUvx02tY0cU-7KVyEUKQrc` }
-          })
+          axiosInstance.get(`/movie/${movieId}?language=ko-KR`),
+          axiosInstance.get(`/movie/${movieId}/credits?language=ko-KR`)
         ]);
 
         setMovie(detailRes.data);
@@ -61,14 +57,14 @@ const MovieDetailPage = () => {
     );
   }
 
-return (
-    <div className="relative min-h-screen text-white pb-20">
-      <div 
-        className="absolute inset-0 bg-cover bg-center -z-10 opacity-30 blur-sm"
-        style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent -z-10" />
-      <div className="max-w-6xl mx-auto px-8 pt-20 flex flex-col md:flex-row gap-10">
+  return (
+  <div className="relative min-h-screen text-white pb-20 bg-zinc-950"> 
+    <div 
+      className="absolute inset-0 bg-cover bg-center -z-20 opacity-40 blur-sm"
+      style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})` }}
+    />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent -z-10" />
+      <div className="relative z-10 max-w-6xl mx-auto px-8 pt-20 flex flex-col md:flex-row gap-10">
         <img 
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
           alt={movie.title}
@@ -88,7 +84,8 @@ return (
           </p>
         </div>
       </div>
-      <div className="max-w-6xl mx-auto px-8 mt-20">
+
+      <div className="relative z-10 max-w-6xl mx-auto px-8 mt-20">
         <h2 className="text-2xl font-bold mb-8">주요 출연진</h2>
         <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
           {cast.slice(0, 12).map((person) => (
