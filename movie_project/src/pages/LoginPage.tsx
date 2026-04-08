@@ -89,6 +89,12 @@ const LoginPage = () => {
         >
           로그인
         </button>
+        <div className="mt-6 text-center text-zinc-400">
+            계정이 없으신가요? 
+            <button onClick={() => navigate('/signup')} className="ml-2 text-red-500 font-bold hover:underline">
+            회원가입
+            </button>
+        </div>
       </form>
     </div>
   );

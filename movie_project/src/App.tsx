@@ -4,6 +4,7 @@ import MoviesPage from './pages/MoviePage';
 import HomePage from './pages/HomPage';
 import MovieDetailPage from './pages/MovieDetailPage';
 import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         {/* 굳이 라우터를 여러개 반복해서 쓸 필요 */}
         <Route path=":category" element={<MoviesPage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<SignUpPage />} />
       </Route>
     </Routes>
   );
