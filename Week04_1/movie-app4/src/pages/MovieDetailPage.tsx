@@ -6,13 +6,13 @@ import LoadingSpinner from '../components/LoadingSpinner';
 export default function MovieDetailsPage() {
   const { movieId } = useParams<{ movieId: string }>();
 
-  // 💡 커스텀 훅 사용: 상세 정보를 가져옵니다.
+  // 커스텀 훅 사용: 상세 정보를 가져옵니다.
   const { data: detail, isLoading, isError } = useFetch<MovieDetail>(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       api_key: import.meta.env.VITE_TMDB_KEY,
       language: 'ko-KR',
-      append_to_response: 'credits,videos' // 팁: 한 번에 크레딧과 영상까지 가져올 수도 있습니다!
+      append_to_response: 'credits,videos'
     }
   );
 
