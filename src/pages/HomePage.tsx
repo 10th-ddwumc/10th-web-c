@@ -1,26 +1,68 @@
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect, useRef } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { getLps } from '../apis/lps'
-import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
-
-
+import SkeletonCard from '../components/SkeletonCard'
 
 const HomePage = () => {
   const navigate = useNavigate()
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
+  const observerRef = useRef<HTMLDivElement | null>(null)
 
-  const { data, isPending, isError, error, refetch } = useQuery({
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['lps', order],
-    queryFn: () => getLps(0, order),
+    queryFn: ({ pageParam }) => getLps(pageParam as number, order),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.data?.hasNext ? lastPage?.data?.nextCursor : undefined
+    },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
   })
-  console.log(data)
 
-if (isPending) return <LoadingSpinner />
-if (isError) return <ErrorMessage message={error.message} onRetry={refetch} />
+  // Intersection Observer - 스크롤 감지
+  useEffect(() => {
+    if (!observerRef.current) return
+    const el = observerRef.current
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage()
+      }
+    })
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
+
+if (isPending) {
+  return (
+    <div className='p-4'>
+      <div className='flex gap-2 mb-6'>
+        <div className='w-20 h-10 bg-gray-300 animate-pulse rounded' />
+        <div className='w-24 h-10 bg-gray-300 animate-pulse rounded' />
+      </div>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
+      </div>
+    </div>
+  )
+}
+  if (isError) return <ErrorMessage message={error.message} onRetry={refetch} />
+
+  const allLps = data?.pages.flatMap(page => page?.data?.data ?? [])
 
   return (
     <div className='p-4'>
@@ -42,21 +84,17 @@ if (isError) return <ErrorMessage message={error.message} onRetry={refetch} />
 
       {/* LP 카드 목록 */}
       <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-        {data?.data?.data?.map((lp: any) => (
+        {allLps.map((lp: any) => (
           <div
             key={lp.id}
             onClick={() => navigate(`/lp/${lp.id}`)}
             className='relative group cursor-pointer overflow-hidden rounded-lg aspect-square bg-gray-200'
           >
-            {/* 썸네일 */}
             <img
-            src={lp.thumbnail}
-            alt={lp.title}
-            crossOrigin='anonymous'
-            className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110'
+              src={lp?.thumbnail}
+              alt={lp?.title}
+              className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110'
             />
-
-            {/* hover 오버레이 */}
             <div className='absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex flex-col justify-end p-3'>
               <div className='opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                 <p className='text-white font-bold text-sm'>{lp.title}</p>
@@ -68,7 +106,18 @@ if (isError) return <ErrorMessage message={error.message} onRetry={refetch} />
             </div>
           </div>
         ))}
+
+        {/* 다음 페이지 로딩 중 스켈레톤 */}
+        {isFetchingNextPage && Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={`skeleton-${i}`}
+            className='rounded-lg aspect-square bg-gray-300 animate-pulse'
+          />
+        ))}
       </div>
+
+      {/* 스크롤 감지 div */}
+      <div ref={observerRef} className='h-1' />
     </div>
   )
 }

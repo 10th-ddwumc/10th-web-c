@@ -2,7 +2,7 @@ const BASE_URL = 'http://localhost:8000'
 
 export const getLps = async (cursor: number, order: 'asc' | 'desc') => {
   const token = localStorage.getItem('accessToken')
-  
+
   const res = await fetch(
     `${BASE_URL}/v1/lps?cursor=${cursor}&limit=10&order=${order}`,
     {
