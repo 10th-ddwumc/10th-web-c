@@ -1,18 +1,21 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getLpDetail } from '../apis/lps'
-import { getComments, createComment } from '../apis/comments'
+import { getComments, createComment, updateComment, deleteComment } from '../apis/comments'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
-import { useRef, useEffect } from 'react'
 
 const LpDetailPage = () => {
   const { lpId } = useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
   const [commentText, setCommentText] = useState('')
   const [commentError, setCommentError] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editText, setEditText] = useState('')
   const observerRef = useRef<HTMLDivElement | null>(null)
 
   // LP 상세 조회
@@ -30,8 +33,7 @@ const LpDetailPage = () => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['lpComments', lpId, order],
-    queryFn: ({ pageParam }) =>
-      getComments(Number(lpId), pageParam as number, order),
+    queryFn: ({ pageParam }) => getComments(Number(lpId), pageParam as number, order),
     initialPageParam: 0,
     getNextPageParam: (lastPage) =>
       lastPage?.data?.hasNext ? lastPage?.data?.nextCursor : undefined,
@@ -41,49 +43,63 @@ const LpDetailPage = () => {
   useEffect(() => {
     if (!observerRef.current) return
     const el = observerRef.current
-
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
         fetchNextPage()
       }
     })
-
     observer.observe(el)
     return () => observer.disconnect()
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   // 댓글 작성
-  const handleCommentSubmit = async () => {
+  const { mutate: submitComment } = useMutation({
+    mutationFn: (content: string) => createComment(Number(lpId), content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lpComments', lpId] })
+      setCommentText('')
+      setCommentError('')
+    },
+    onError: () => setCommentError('댓글 작성에 실패했어요.'),
+  })
+
+  // 댓글 수정
+  const { mutate: editComment } = useMutation({
+    mutationFn: ({ commentId, content }: { commentId: number; content: string }) =>
+      updateComment(Number(lpId), commentId, content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lpComments', lpId] })
+      setEditingId(null)
+    },
+  })
+
+  // 댓글 삭제
+  const { mutate: removeComment } = useMutation({
+    mutationFn: (commentId: number) => deleteComment(Number(lpId), commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lpComments', lpId] })
+    },
+  })
+
+  const handleCommentSubmit = () => {
     if (!commentText.trim()) {
       setCommentError('댓글을 입력해주세요.')
       return
     }
-    try {
-      await createComment(Number(lpId), commentText)
-      setCommentText('')
-      setCommentError('')
-    } catch (err) {
-      setCommentError('댓글 작성에 실패했어요.')
-    }
+    submitComment(commentText)
   }
 
   if (isPending) return <LoadingSpinner />
   if (isError) return <ErrorMessage message={error.message} onRetry={refetch} />
 
   const lp = data?.data
-  const allComments = commentsData?.pages.flatMap(
-    (page) => page?.data?.data ?? []
-  )
+  const allComments = commentsData?.pages.flatMap((page) => page?.data?.data ?? [])
 
   return (
     <div className='max-w-2xl mx-auto p-6'>
       {/* 썸네일 */}
       <div className='w-full aspect-square bg-gray-200 rounded-lg mb-6 overflow-hidden'>
-        <img
-          src={lp?.thumbnail}
-          alt={lp?.title}
-          className='w-full h-full object-cover'
-        />
+        <img src={lp?.thumbnail} alt={lp?.title} className='w-full h-full object-cover' />
       </div>
 
       {/* 제목 */}
@@ -174,9 +190,48 @@ const LpDetailPage = () => {
                 <div className='w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center text-pink-600 font-bold flex-shrink-0'>
                   {comment.user?.name?.[0] ?? '?'}
                 </div>
-                <div>
+                <div className='flex-1'>
                   <p className='font-bold text-sm'>{comment.user?.name}</p>
-                  <p className='text-gray-700 text-sm'>{comment.content}</p>
+
+                  {editingId === comment.id ? (
+                    // 수정 모드
+                    <div className='flex gap-2 mt-1'>
+                      <input
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        className='flex-1 border px-2 py-1 rounded text-sm outline-none focus:ring-2 focus:ring-pink-500'
+                      />
+                      <button
+                        onClick={() => editComment({ commentId: comment.id, content: editText })}
+                        className='text-xs bg-pink-500 text-white px-2 py-1 rounded'
+                      >
+                        확인
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className='text-xs bg-gray-300 px-2 py-1 rounded'
+                      >
+                        취소
+                      </button>
+                    </div>
+                  ) : (
+                    // 일반 모드
+                    <div className='flex items-center gap-2'>
+                      <p className='text-gray-700 text-sm'>{comment.content}</p>
+                      <button
+                        onClick={() => { setEditingId(comment.id); setEditText(comment.content) }}
+                        className='text-xs text-blue-400'
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => removeComment(comment.id)}
+                        className='text-xs text-red-400'
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

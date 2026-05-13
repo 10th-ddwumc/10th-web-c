@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { getLps } from '../apis/lps'
 import ErrorMessage from '../components/ErrorMessage'
 import SkeletonCard from '../components/SkeletonCard'
+import LpCreateModal from '../components/LpCreateModal'
 
 const HomePage = () => {
   const navigate = useNavigate()
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const observerRef = useRef<HTMLDivElement | null>(null)
 
   const {
@@ -81,6 +83,12 @@ if (isPending) {
           오래된순
         </button>
       </div>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className='fixed bottom-6 right-6 w-14 h-14 bg-pink-500 text-white text-3xl rounded-full shadow-lg hover:bg-pink-600 z-40'
+        >
+        +
+    </button>
 
       {/* LP 카드 목록 */}
       <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
@@ -115,6 +123,7 @@ if (isPending) {
           />
         ))}
       </div>
+      {isModalOpen && <LpCreateModal onClose={() => setIsModalOpen(false)} />}
 
       {/* 스크롤 감지 div */}
       <div ref={observerRef} className='h-1' />
