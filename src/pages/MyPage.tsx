@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getMe, updateUser, deleteUser, signout } from '../apis/users'
 import { uploadImage } from '../apis/lps'
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 const MyPage = () => {
   const navigate = useNavigate()
@@ -13,6 +14,7 @@ const MyPage = () => {
   const [bio, setBio] = useState('')
   const [avatar, setAvatar] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
+  const { updateNickname } = useAuth()
 
   // 내 정보 조회
     const { data, isPending } = useQuery({
@@ -30,12 +32,20 @@ const MyPage = () => {
     }, [data])
   // 프로필 수정
   const { mutate: editUser, isPending: isUpdating } = useMutation({
-    mutationFn: () => updateUser({ name, bio, avatar }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['me'] })
-      setIsEditing(false)
-    },
-  })
+  mutationFn: () => updateUser({ name, bio, avatar }),
+  onMutate: () => {
+    // 서버 응답 기다리지 않고 NavBar 즉시 변경
+    updateNickname(name)
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['me'] })
+    setIsEditing(false)
+  },
+  onError: () => {
+    // 실패 시 원래 닉네임으로 롤백
+    updateNickname(user?.name ?? '')
+  },
+})
 
   // 아바타 업로드
   const { mutate: uploadAvatar } = useMutation({

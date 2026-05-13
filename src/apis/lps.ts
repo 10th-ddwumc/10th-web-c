@@ -65,3 +65,17 @@ export const createLp = async (body: {
   if (!res.ok) throw new Error('LP 생성 실패')
   return res.json()
 }
+
+// 좋아요 추가
+export const likeLp = async (lpId: number) => {
+  const token = localStorage.getItem('accessToken')
+  const res = await fetch(`${BASE_URL}/v1/lps/${lpId}/likes`, {
+    method: 'POST',
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  })
+  if (!res.ok) throw new Error('좋아요 실패')
+  return res.json()
+}
+

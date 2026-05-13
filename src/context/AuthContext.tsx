@@ -5,6 +5,7 @@ interface AuthContextType {
   nickname: string | null
   login: (token: string, nickname: string) => void
   logout: () => void
+  updateNickname: (nickname: string) => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -31,12 +32,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('nickname')
   }
 
+  const updateNickname = (newNickname: string) => {
+  setNickname(newNickname)
+  localStorage.setItem('nickname', newNickname)
+  }
+
   return (
-    <AuthContext.Provider value={{ accessToken, nickname, login, logout }}>
+    <AuthContext.Provider value={{ accessToken, nickname, login, logout, updateNickname }}>
       {children}
     </AuthContext.Provider>
   )
-}
+  }
 
 export const useAuth = () => {
   const context = useContext(AuthContext)

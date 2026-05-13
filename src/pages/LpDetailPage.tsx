@@ -5,9 +5,12 @@ import { getLpDetail } from '../apis/lps'
 import { getComments, createComment, updateComment, deleteComment } from '../apis/comments'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
+import { likeLp, unlikeLp } from '../apis/lps'
+import { useAuth } from '../context/AuthContext'
 
 const LpDetailPage = () => {
   const { lpId } = useParams()
+  const { nickname } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -81,6 +84,39 @@ const LpDetailPage = () => {
     },
   })
 
+  // 좋아요 토글 (낙관적 업데이트)
+    const { mutate: toggleLike } = useMutation({
+    mutationFn: () => {
+        const isLiked = lp?.likes?.some((like: any) => like.user?.name === nickname)
+        return isLiked ? unlikeLp(Number(lpId)) : likeLp(Number(lpId))
+    },
+    onMutate: async () => {
+        await queryClient.cancelQueries({ queryKey: ['lp', lpId] })
+        const snapshot = queryClient.getQueryData(['lp', lpId])
+
+        queryClient.setQueryData(['lp', lpId], (old: any) => {
+        const isLiked = old?.data?.likes?.some((like: any) => like.user?.name === nickname)
+        return {
+            ...old,
+            data: {
+            ...old.data,
+            likes: isLiked
+                ? old.data.likes.filter((like: any) => like.user?.name !== nickname)
+                : [...old.data.likes, { user: { name: nickname } }],
+            },
+        }
+        })
+
+        return { snapshot }
+    },
+    onError: (_err, _vars, context) => {
+        queryClient.setQueryData(['lp', lpId], context?.snapshot)
+    },
+    onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ['lp', lpId] })
+    },
+    })
+
   const handleCommentSubmit = () => {
     if (!commentText.trim()) {
       setCommentError('댓글을 입력해주세요.')
@@ -118,7 +154,10 @@ const LpDetailPage = () => {
 
       {/* 버튼들 */}
       <div className='flex gap-3 mb-8'>
-        <button className='bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600'>
+        <button
+          onClick={() => toggleLike()}
+          className='bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600'
+        >
           ❤️ 좋아요
         </button>
         <button className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>
