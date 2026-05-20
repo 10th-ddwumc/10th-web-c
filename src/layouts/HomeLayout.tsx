@@ -1,17 +1,17 @@
-import { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
+import useSidebar from '../hooks/useSidebar'  
 
 const HomeLayout = () => {
   const navigate = useNavigate()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const { isOpen, close, toggle } = useSidebar()  // useState 대신
 
   return (
     <div className='min-h-screen bg-white'>
-      <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <Navbar onMenuClick={toggle} />              {/* toggle로 교체 */}
       <div className='flex pt-16'>
-        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <Sidebar isOpen={isOpen} onClose={close} /> {/* isOpen, close로 교체 */}
         <main className='flex-1 p-4'>
           <Outlet />
         </main>
