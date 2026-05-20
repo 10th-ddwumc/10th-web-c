@@ -1,16 +1,24 @@
 const BASE_URL = 'http://localhost:8000'
 
-export const getLps = async (cursor: number, order: 'asc' | 'desc') => {
+export const getLps = async (
+  cursor: number,
+  order: 'asc' | 'desc',
+  search?: string   // 추가!
+) => {
   const token = localStorage.getItem('accessToken')
 
-  const res = await fetch(
-    `${BASE_URL}/v1/lps?cursor=${cursor}&limit=10&order=${order}`,
-    {
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    }
-  )
+  const params = new URLSearchParams({
+    cursor: String(cursor),
+    limit: '10',
+    order,
+    ...(search && { search }),
+  })
+
+  const res = await fetch(`${BASE_URL}/v1/lps?${params.toString()}`, {
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  })
   if (!res.ok) throw new Error('데이터 불러오기 실패')
   return res.json()
 }
@@ -78,4 +86,15 @@ export const likeLp = async (lpId: number) => {
   if (!res.ok) throw new Error('좋아요 실패')
   return res.json()
 }
-
+// 좋아요 취소
+export const unlikeLp = async (lpId: number) => {
+  const token = localStorage.getItem('accessToken')
+  const res = await fetch(`${BASE_URL}/v1/lps/${lpId}/likes`, {
+    method: 'DELETE',
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  })
+  if (!res.ok) throw new Error('좋아요 취소 실패')
+  return res.json()
+}

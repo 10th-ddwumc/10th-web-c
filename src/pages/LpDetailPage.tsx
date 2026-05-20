@@ -242,7 +242,8 @@ const LpDetailPage = () => {
                       />
                       <button
                         onClick={() => editComment({ commentId: comment.id, content: editText })}
-                        className='text-xs bg-pink-500 text-white px-2 py-1 rounded'
+                        disabled={!editText.trim() || editText === comment.content}
+                        className='text-xs bg-pink-500 text-white px-2 py-1 rounded disabled:opacity-50'
                       >
                         확인
                       </button>

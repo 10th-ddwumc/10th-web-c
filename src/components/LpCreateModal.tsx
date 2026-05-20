@@ -25,11 +25,14 @@ const LpCreateModal = ({ onClose }: Props) => {
 
   // LP 생성
   const { mutate: submitLp, isPending } = useMutation({
-    mutationFn: () => createLp({ title, content, thumbnail, tags, published: true }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lps'] })
-      onClose()
-    },
+  mutationFn: () => createLp({ title, content, thumbnail, tags, published: true }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['lps'] })
+    onClose()
+  },
+  onError: () => {
+    alert('LP 생성에 실패했어요.')
+  },
   })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -5,11 +5,14 @@ import { getLps } from '../apis/lps'
 import ErrorMessage from '../components/ErrorMessage'
 import SkeletonCard from '../components/SkeletonCard'
 import LpCreateModal from '../components/LpCreateModal'
+import useDebounce from '../hooks/useDebounce' 
 
 const HomePage = () => {
   const navigate = useNavigate()
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)  
+  const [search, setSearch] = useState('')               
+  const debouncedQuery = useDebounce(search, 300)     
   const observerRef = useRef<HTMLDivElement | null>(null)
 
   const {
@@ -22,12 +25,13 @@ const HomePage = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['lps', order],
-    queryFn: ({ pageParam }) => getLps(pageParam as number, order),
+    queryKey: ['lps', order, debouncedQuery],
+    queryFn: ({ pageParam }) => getLps(pageParam as number, order, debouncedQuery || undefined),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
       return lastPage?.data?.hasNext ? lastPage?.data?.nextCursor : undefined
     },
+    enabled: true,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
   })
@@ -68,6 +72,15 @@ if (isPending) {
 
   return (
     <div className='p-4'>
+      {/* 검색창 추가 */}
+      <input
+        type='text'
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder='LP를 검색해보세요...'
+        className='w-full border border-gray-300 rounded px-4 py-2 mb-4
+                   focus:outline-none focus:border-pink-400'
+      />
       {/* 정렬 버튼 */}
       <div className='flex gap-2 mb-6'>
         <button
@@ -123,6 +136,12 @@ if (isPending) {
           />
         ))}
       </div>
+
+      {/* 검색 결과 없을 때 */}
+      {allLps.length === 0 && (
+        <p className='text-center text-gray-400 mt-12'>검색 결과가 없어요 😢</p>
+      )}
+      
       {isModalOpen && <LpCreateModal onClose={() => setIsModalOpen(false)} />}
 
       {/* 스크롤 감지 div */}
