@@ -6,13 +6,17 @@ import ErrorMessage from '../components/ErrorMessage'
 import SkeletonCard from '../components/SkeletonCard'
 import LpCreateModal from '../components/LpCreateModal'
 import useDebounce from '../hooks/useDebounce' 
+import useThrottle from '../hooks/useThrottle'
 
 const HomePage = () => {
   const navigate = useNavigate()
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
   const [isModalOpen, setIsModalOpen] = useState(false)  
   const [search, setSearch] = useState('')               
+  const [scrollY, setScrollY] = useState(0) 
   const debouncedQuery = useDebounce(search, 300)     
+  const throttledScrollY = useThrottle(scrollY, 3000)
+
   const observerRef = useRef<HTMLDivElement | null>(null)
 
   const {
@@ -36,6 +40,20 @@ const HomePage = () => {
     gcTime: 1000 * 60 * 10,
   })
 
+    // 스크롤 이벤트 감지 -> scrollY 업데이트
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // throttledScrollY 변경 시 콘솔 출력 (검증용)
+  useEffect(() => {
+    console.log(`🎵 throttle된 스크롤 위치: ${throttledScrollY}px`)
+  }, [throttledScrollY])
+  
   // Intersection Observer - 스크롤 감지
   useEffect(() => {
     if (!observerRef.current) return
@@ -141,7 +159,7 @@ if (isPending) {
       {allLps.length === 0 && (
         <p className='text-center text-gray-400 mt-12'>검색 결과가 없어요 😢</p>
       )}
-      
+
       {isModalOpen && <LpCreateModal onClose={() => setIsModalOpen(false)} />}
 
       {/* 스크롤 감지 div */}
