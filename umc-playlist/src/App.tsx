@@ -5,10 +5,12 @@ import { calculateTotals } from "./store/cartSlice";
 import Navbar from "./components/Navbar";
 import CartItem from "./components/CartItem";
 import Footer from "./components/Footer";
+import Modal from "./components/Modal";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const { cartItems } = useSelector((state: RootState) => state.cart);
+  const { isOpen } = useSelector((state: RootState) => state.modal);
 
   useEffect(() => {
     dispatch(calculateTotals());
@@ -16,6 +18,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {isOpen && <Modal />}
       <Navbar />
       <div className="max-w-2xl mx-auto bg-white mt-8 rounded shadow">
         {cartItems.length === 0 ? (
@@ -23,9 +26,7 @@ function App() {
             장바구니가 비어있어요 🛒
           </div>
         ) : (
-          cartItems.map((item) => (
-            <CartItem key={item.id} {...item} />
-          ))
+          cartItems.map((item) => <CartItem key={item.id} {...item} />)
         )}
         <Footer />
       </div>

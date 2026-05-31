@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store/store";
-import { clearCart } from "../store/cartSlice";
+import { openModal } from "../store/modalSlice";
 
 const Footer = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,7 +17,7 @@ const Footer = () => {
         <span>${total.toLocaleString()}</span>
       </div>
       <button
-        onClick={() => dispatch(clearCart())}
+        onClick={() => dispatch(openModal())}
         className="w-full bg-red-500 text-white py-3 rounded font-bold hover:bg-red-600"
       >
         전체 삭제
