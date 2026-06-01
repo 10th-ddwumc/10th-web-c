@@ -1,17 +1,17 @@
-import { useDispatch } from 'react-redux';
-import { closeModal } from '../store/modalSlice';
-import { clearCart } from '../store/cartSlice';
+import useCartStore from '../store/useCartStore';
+import useModalStore from '../store/useModalStore';
 
-export default function Modal(){
-  const dispatch = useDispatch();
+export default function Modal() {
+  const { clearCart } = useCartStore();
+  const { closeModal } = useModalStore();
 
   const handleConfirm = () => {
-    dispatch(clearCart());  // 1. 장바구니 아이템 모두 삭제
-    dispatch(closeModal()); // 2. 모달 창 닫기
+    clearCart();   // 장바구니 전체 삭제
+    closeModal();  // 모달 닫기
   };
 
   const handleCancel = () => {
-    dispatch(closeModal()); // 모달 창만 닫기
+    closeModal();  // 모달만 닫기
   };
 
   return (
