@@ -1,5 +1,5 @@
 export interface CartItem {
-  id: number;
+  id: string;  // number → string
   title: string;
   artist: string;
   amount: number;
@@ -9,7 +9,7 @@ export interface CartItem {
 
 export const cartItems: CartItem[] = [
   {
-    id: 1,
+    id: "1",  // 따옴표 추가
     title: "Vancouver",
     artist: "OG Ocianic / 에픽하이",
     amount: 1,
@@ -17,7 +17,7 @@ export const cartItems: CartItem[] = [
     img: "https://picsum.photos/seed/1/60/60",
   },
   {
-    id: 2,
+    id: "2",
     title: "Empty Island",
     artist: "루시",
     amount: 1,
@@ -25,7 +25,7 @@ export const cartItems: CartItem[] = [
     img: "https://picsum.photos/seed/2/60/60",
   },
   {
-    id: 3,
+    id: "3",
     title: "golden hour",
     artist: "IVE",
     amount: 1,
@@ -33,7 +33,7 @@ export const cartItems: CartItem[] = [
     img: "https://picsum.photos/seed/3/60/60",
   },
   {
-    id: 4,
+    id: "4",
     title: "Home Sweet Home",
     artist: "기리보이",
     amount: 1,
@@ -41,7 +41,7 @@ export const cartItems: CartItem[] = [
     img: "https://picsum.photos/seed/4/60/60",
   },
   {
-    id: 5,
+    id: "5",
     title: "Lemon",
     artist: "Kenshi Yonezu",
     amount: 1,

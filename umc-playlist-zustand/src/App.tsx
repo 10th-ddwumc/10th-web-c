@@ -8,11 +8,6 @@ import Modal from "./components/Modal";
 function App() {
   const cartItems = useCartStore((state) => state.cartItems);
   const isOpen = useCartStore((state) => state.isOpen);
-  const calculateTotals = useCartStore((state) => state.calculateTotals);
-
-  useEffect(() => {
-    calculateTotals();
-  }, [cartItems]);
 
   return (
     <div className="min-h-screen bg-gray-100">
