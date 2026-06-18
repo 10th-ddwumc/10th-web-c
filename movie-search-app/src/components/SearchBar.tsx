@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from 'react'
+import { useState, useCallback, type KeyboardEvent } from 'react'
 import type { Language } from '../types/movie'
 
 interface SearchBarProps {
@@ -16,45 +16,51 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   const [includeAdult, setIncludeAdult] = useState(false)
   const [language, setLanguage] = useState<Language>('ko-KR')
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const trimmed = query.trim()
     if (!trimmed) return
     onSearch(trimmed, includeAdult, language)
-  }
+  }, [query, includeAdult, language, onSearch])
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleSearch()
-  }
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') handleSearch()
+    },
+    [handleSearch],
+  )
 
   return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col gap-3">
+    <div className="w-full max-w-2xl mx-auto flex flex-col gap-4">
+      {/* 검색 입력 */}
       <div className="flex gap-2">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="영화 제목을 검색하세요..."
-          className="flex-1 px-4 py-2.5 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="제목, 장르, 배우로 검색..."
+          className="flex-1 px-5 py-3 rounded bg-[#2a2a2a] border border-[#333] text-white placeholder-[#777] focus:outline-none focus:border-[#E50914] focus:ring-1 focus:ring-[#E50914] transition-colors text-sm"
         />
         <button
           onClick={handleSearch}
-          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+          className="px-6 py-3 bg-[#E50914] hover:bg-[#f40612] active:bg-[#b30710] text-white font-bold text-sm rounded tracking-wide transition-colors"
         >
           검색
         </button>
       </div>
 
-      <div className="flex items-center gap-5 px-1">
-        <div className="flex gap-1">
+      {/* 옵션 행 */}
+      <div className="flex items-center justify-between px-0.5">
+        {/* 언어 선택 */}
+        <div className="flex gap-1.5">
           {LANGUAGES.map(({ value, label }) => (
             <button
               key={value}
               onClick={() => setLanguage(value)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 py-1 rounded text-xs font-medium tracking-wide transition-colors border ${
                 language === value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-[#E50914] border-[#E50914] text-white'
+                  : 'bg-transparent border-[#444] text-[#aaa] hover:border-[#E50914] hover:text-white'
               }`}
             >
               {label}
@@ -62,14 +68,21 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           ))}
         </div>
 
-        <label className="flex items-center gap-2 cursor-pointer select-none ml-auto">
-          <input
-            type="checkbox"
-            checked={includeAdult}
-            onChange={(e) => setIncludeAdult(e.target.checked)}
-            className="w-4 h-4 accent-blue-500"
-          />
-          <span className="text-sm text-gray-300">성인 콘텐츠 포함</span>
+        {/* 성인 콘텐츠 */}
+        <label className="flex items-center gap-2 cursor-pointer select-none group">
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={includeAdult}
+              onChange={(e) => setIncludeAdult(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-8 h-4 bg-[#333] rounded-full peer-checked:bg-[#E50914] transition-colors" />
+            <div className="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-4" />
+          </div>
+          <span className="text-xs text-[#aaa] group-hover:text-white transition-colors">
+            19+ 포함
+          </span>
         </label>
       </div>
     </div>

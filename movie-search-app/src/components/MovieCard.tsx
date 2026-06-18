@@ -8,60 +8,68 @@ interface MovieCardProps {
 }
 
 function MovieCard({ movie, onClick }: MovieCardProps) {
-  // movie prop이 바뀔 때만 파생값 재계산
-  const { score, year, scoreColor, posterUrl } = useMemo(() => {
+  const { ratingText, year, scoreColor, posterUrl } = useMemo(() => {
     const score = Math.round(movie.vote_average * 10)
     return {
       score,
+      ratingText: movie.vote_count > 0 ? movie.vote_average.toFixed(1) : 'N/A',
       year: movie.release_date?.slice(0, 4) ?? '—',
       scoreColor:
-        score >= 70 ? 'text-green-400' : score >= 50 ? 'text-yellow-400' : 'text-red-400',
+        score >= 70 ? 'text-green-400' : score >= 50 ? 'text-yellow-400' : 'text-[#E50914]',
       posterUrl: getImageUrl(movie.poster_path, 'w342'),
     }
   }, [movie])
 
   return (
     <div
-      className="flex flex-col bg-gray-800 rounded-xl overflow-hidden hover:scale-105 hover:shadow-xl hover:shadow-black/50 transition-transform duration-200 cursor-pointer"
+      className="group relative cursor-pointer rounded overflow-hidden bg-[#181818]"
       onClick={() => onClick(movie)}
     >
-      <div className="relative aspect-[2/3] bg-gray-700">
+      {/* 포스터 */}
+      <div className="aspect-[2/3] overflow-hidden">
         {posterUrl ? (
           <img
             src={posterUrl}
             alt={movie.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
-            포스터 없음
+          <div className="w-full h-full flex flex-col items-center justify-center bg-[#222] gap-2">
+            <svg className="w-8 h-8 text-[#444]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+            </svg>
+            <span className="text-[#555] text-xs">No Image</span>
           </div>
         )}
-        {movie.adult && (
-          <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-            19+
-          </span>
-        )}
-        <div className={`absolute top-2 right-2 bg-gray-900/80 text-xs font-bold px-1.5 py-0.5 rounded ${scoreColor}`}>
-          {movie.vote_count > 0 ? `${score}%` : 'N/A'}
+      </div>
+
+      {/* 호버 오버레이 */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+        <h3 className="text-white text-xs font-bold leading-snug line-clamp-2 mb-1">
+          {movie.title}
+        </h3>
+        <div className="flex items-center gap-2">
+          <span className={`text-xs font-bold ${scoreColor}`}>{ratingText}</span>
+          <span className="text-[#666] text-[10px]">/10</span>
+          <span className="text-[#aaa] text-xs">{year}</span>
         </div>
       </div>
 
-      <div className="p-3 flex flex-col gap-1 flex-1">
-        <h3 className="text-white text-sm font-semibold leading-snug line-clamp-2">
-          {movie.title}
-        </h3>
-        <p className="text-gray-400 text-xs">{year}</p>
-        {movie.overview && (
-          <p className="text-gray-400 text-xs leading-relaxed line-clamp-3 mt-1">
-            {movie.overview}
-          </p>
-        )}
+      {/* 배지들 (항상 표시) */}
+      {movie.adult && (
+        <span className="absolute top-2 left-2 bg-[#E50914] text-white text-[10px] font-black px-1.5 py-0.5 rounded-sm tracking-wider z-10">
+          19+
+        </span>
+      )}
+
+      {/* 기본 상태 제목 (호버 전) */}
+      <div className="p-2.5 group-hover:opacity-0 transition-opacity duration-200">
+        <p className="text-white text-xs font-medium line-clamp-1">{movie.title}</p>
+        <p className="text-[#777] text-[11px] mt-0.5">{year}</p>
       </div>
     </div>
   )
 }
 
-// movie와 onClick 참조가 모두 동일할 때 리렌더 생략
 export default memo(MovieCard)

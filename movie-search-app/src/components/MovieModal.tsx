@@ -9,7 +9,6 @@ interface MovieModalProps {
 
 const STAR_COUNT = 5
 
-// memo: score prop이 바뀔 때만 리렌더
 const StarRating = memo(function StarRating({ score }: { score: number }) {
   const filled = Math.round((score / 100) * STAR_COUNT)
   return (
@@ -17,7 +16,7 @@ const StarRating = memo(function StarRating({ score }: { score: number }) {
       {Array.from({ length: STAR_COUNT }, (_, i) => (
         <svg
           key={i}
-          className={`w-5 h-5 ${i < filled ? 'text-yellow-400' : 'text-gray-600'}`}
+          className={`w-4 h-4 ${i < filled ? 'text-[#E50914]' : 'text-[#333]'}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -35,20 +34,19 @@ function formatDate(dateStr: string) {
 }
 
 function MovieModal({ movie, onClose }: MovieModalProps) {
-  // movie prop이 바뀔 때만 파생값 재계산
-  const { score, scoreColor, posterUrl, imdbSearchUrl, formattedDate } = useMemo(() => {
+  const { score, ratingText, scoreColor, posterUrl, imdbSearchUrl, formattedDate } = useMemo(() => {
     const score = Math.round(movie.vote_average * 10)
     return {
       score,
+      ratingText: movie.vote_count > 0 ? movie.vote_average.toFixed(1) : 'N/A',
       scoreColor:
-        score >= 70 ? 'text-green-400' : score >= 50 ? 'text-yellow-400' : 'text-red-400',
+        score >= 70 ? 'text-green-400' : score >= 50 ? 'text-yellow-400' : 'text-[#E50914]',
       posterUrl: getImageUrl(movie.poster_path, 'w500'),
       imdbSearchUrl: `https://www.imdb.com/find/?q=${encodeURIComponent(movie.title)}`,
       formattedDate: formatDate(movie.release_date),
     }
   }, [movie])
 
-  // onClose가 useCallback으로 안정화되어 있어 불필요한 effect 재등록 없음
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -63,25 +61,27 @@ function MovieModal({ movie, onClose }: MovieModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative bg-gray-800 rounded-2xl overflow-hidden w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl"
+        className="relative bg-[#181818] rounded-lg overflow-hidden w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl shadow-black/80 border border-[#2a2a2a]"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-900/80 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/60 text-[#aaa] hover:text-white hover:bg-[#E50914] transition-colors"
           aria-label="닫기"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
         <div className="overflow-y-auto flex flex-col sm:flex-row">
-          <div className="sm:w-56 flex-shrink-0 bg-gray-700">
+          {/* 포스터 */}
+          <div className="sm:w-52 flex-shrink-0 bg-[#111]">
             {posterUrl ? (
               <img
                 src={posterUrl}
@@ -89,63 +89,77 @@ function MovieModal({ movie, onClose }: MovieModalProps) {
                 className="w-full h-full object-cover sm:min-h-[22rem]"
               />
             ) : (
-              <div className="w-full h-48 sm:h-full flex items-center justify-center text-gray-500 text-sm">
-                포스터 없음
+              <div className="w-full h-48 sm:h-full flex items-center justify-center text-[#444]">
+                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                </svg>
               </div>
             )}
           </div>
 
+          {/* 정보 */}
           <div className="flex flex-col gap-4 p-6 flex-1">
+            {/* 제목 */}
             <div>
-              <h2 className="text-white text-xl font-bold leading-snug">{movie.title}</h2>
+              <h2 className="text-white text-xl font-bold leading-snug tracking-tight">
+                {movie.title}
+              </h2>
               {movie.original_title !== movie.title && (
-                <p className="text-gray-400 text-sm mt-0.5">{movie.original_title}</p>
+                <p className="text-[#777] text-sm mt-1 tracking-wide">{movie.original_title}</p>
               )}
               {movie.adult && (
-                <span className="inline-block mt-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">
+                <span className="inline-block mt-2 bg-[#E50914] text-white text-[10px] font-black px-2 py-0.5 rounded-sm tracking-widest">
                   19+
                 </span>
               )}
             </div>
 
-            <div className="flex flex-col gap-2 text-sm">
-              <div className="flex items-center gap-2">
+            {/* 평점 & 날짜 */}
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center gap-3">
                 <StarRating score={score} />
-                <span className={`font-bold ${scoreColor}`}>
-                  {movie.vote_count > 0 ? `${score}%` : 'N/A'}
+                <span className={`text-lg font-black tabular-nums ${scoreColor}`}>
+                  {ratingText}
                 </span>
-                <span className="text-gray-500 text-xs">({movie.vote_count.toLocaleString()}명)</span>
+                <span className="text-[#555] text-xs self-end pb-0.5">/10</span>
+                <span className="text-[#555] text-xs self-end pb-0.5">
+                  ({movie.vote_count.toLocaleString()}명)
+                </span>
               </div>
 
-              <div className="flex items-center gap-2 text-gray-300">
-                <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 text-[#aaa] text-sm">
+                <svg className="w-3.5 h-3.5 text-[#555]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 {formattedDate}
               </div>
             </div>
 
-            {movie.overview ? (
-              <p className="text-gray-300 text-sm leading-relaxed">{movie.overview}</p>
-            ) : (
-              <p className="text-gray-500 text-sm italic">줄거리 정보가 없습니다.</p>
-            )}
+            {/* 줄거리 */}
+            <div className="border-t border-[#2a2a2a] pt-4">
+              {movie.overview ? (
+                <p className="text-[#ccc] text-sm leading-relaxed">{movie.overview}</p>
+              ) : (
+                <p className="text-[#555] text-sm italic">줄거리 정보가 없습니다.</p>
+              )}
+            </div>
 
-            <div className="flex gap-3 mt-auto pt-2">
+            {/* 버튼 */}
+            <div className="flex gap-2.5 mt-auto pt-2">
               <a
                 href={imdbSearchUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold text-sm rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[#f5c518] hover:bg-[#e6b800] text-black font-black text-xs rounded tracking-wider transition-colors"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M14.31 9.588v.005c-.077-.048-1.798-1.084-1.798-1.084v7.069l1.966.001V9.589zM3 5.25A2.25 2.25 0 015.25 3h13.5A2.25 2.25 0 0121 5.25v13.5A2.25 2.25 0 0118.75 21H5.25A2.25 2.25 0 013 18.75V5.25zm4.28 2.406H5.75v8.688h1.53V7.656zm3.703 0H9.23v8.688h1.421V11.16l1.257 3.56h.953l1.255-3.507v5.131h1.423V7.656h-1.74l-1.395 3.99-1.423-3.99zm7.735 0h-1.54v8.688h1.54V7.656z" />
                 </svg>
-                IMDb에서 검색하기
+                IMDb 검색
               </a>
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors"
+                className="px-4 py-2 border border-[#444] hover:border-[#E50914] text-[#aaa] hover:text-white text-xs font-medium rounded tracking-wider transition-colors"
               >
                 닫기
               </button>
@@ -157,5 +171,4 @@ function MovieModal({ movie, onClose }: MovieModalProps) {
   )
 }
 
-// movie와 onClose 참조가 모두 동일할 때 리렌더 생략
 export default memo(MovieModal)
