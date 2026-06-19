@@ -10,7 +10,7 @@ const TextInput = memo(function TextInput({ value, onChange }: TextInputProps) {
 
   return (
     <div className="section">
-      <h2>Text Input</h2>
+      <h2>Input</h2>
       <input
         type="text"
         value={value}
